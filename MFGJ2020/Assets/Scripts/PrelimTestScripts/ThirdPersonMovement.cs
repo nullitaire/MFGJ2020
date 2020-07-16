@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ThirdPersonMovement : MonoBehaviour
 {
-    // Start is called before the first frame update
     //motor that drives the player
     public CharacterController controller;
     //player moves with direction of camera:
