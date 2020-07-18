@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// CURRENTLY NOT IN USE
+/// TO DO: ORGANIZE CODE TO USE THIS MAYBE
+/// </summary>
 public class InputHandler : MonoBehaviour
 { 
     float horizontal;
@@ -13,12 +17,13 @@ public class InputHandler : MonoBehaviour
     void Start()
     {
         states = GetComponent<StateManager>();
-        states.Init();
+        //states.Init();
     }
 
     void FixedUpdate()
     {
         GetInput();
+        UpdateStates();
     }
 
     void GetInput()

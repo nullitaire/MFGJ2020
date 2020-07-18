@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//namespace SA
+/// <summary>
+/// CURRENTLY NOT IN USE
+/// TO DO: ORGANIZE CODE TO USE THIS MAYBE
+/// </summary>
 public class StateManager : MonoBehaviour
 {
     public float horizontal;
@@ -15,34 +18,34 @@ public class StateManager : MonoBehaviour
     [HideInInspector]
     public Rigidbody rb;
 
-    public void Init()
-    {
-        SetupAnimator();
-        rb = GetComponent<Rigidbody>();
+    //public void Init()
+    //{
+    //    SetupAnimator();
+    //    rb = GetComponent<Rigidbody>();
 
-    }
+    //}
 
 
-    void SetupAnimator()
-    {
-        if (player == null)
-        {
-            anim = GetComponentInChildren<Animator>();
-            if (anim == null)
-            {
-                Debug.Log("No model found");
-            }
-            else
-            {
-                player = anim.gameObject;
-            }
-        }
-        if (anim == null)
-        {
-            anim = player.GetComponent<Animator>();
-        }
+    //void SetupAnimator()
+    //{
+    //    if (player == null)
+    //    {
+    //        anim = GetComponentInChildren<Animator>();
+    //        if (anim == null)
+    //        {
+    //            Debug.Log("No model found");
+    //        }
+    //        else
+    //        {
+    //            player = anim.gameObject;
+    //        }
+    //    }
+    //    if (anim == null)
+    //    {
+    //        anim = player.GetComponent<Animator>();
+    //    }
 
-        anim.applyRootMotion = false;
-    }
+    //    anim.applyRootMotion = false;
+    //}
 
 }

@@ -16,12 +16,17 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         agent.SetDestination(target);
-        Move();
+        PathTrace();
     }
 
-    private void Move()
+    /// <summary>
+    /// constantly moves character in forwards direction towards destination
+    /// TO DO: Look into making it go faster over time.
+    /// </summary>
+    private void PathTrace()
     {
         Vector3 movement = transform.forward * movementSpeed * Time.deltaTime;
         agent.Move(movement);
     }
+
 }

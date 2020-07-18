@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathTrace : MonoBehaviour
+//recognize waypoints to direct player's movement
+public class PathManager : MonoBehaviour
 {
     [SerializeField]
     private Transform[] waypoints;
