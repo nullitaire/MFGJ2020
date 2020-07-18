@@ -6,7 +6,6 @@ using UnityEngine.Animations;
 
 public class PlayerController : MonoBehaviour
 {
-
     public NavMeshAgent agent;
     private Vector3 target= new Vector3(0f, 1f, 0f);
     
