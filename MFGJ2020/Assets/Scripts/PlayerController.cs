@@ -28,4 +28,9 @@ public class PlayerController : MonoBehaviour
         agent.Move(movement);
     }
 
+    public float GetSpeed()
+    {
+        return movementSpeed;
+    }
+
 }

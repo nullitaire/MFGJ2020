@@ -1,15 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class PlayerMovement : MonoBehaviour
-{
-    Vector3 movement = Vector3.zero;
-
-    float h_dimension = 5f;
-    float v_dimension = 5f;
+{ 
+    public float speed = 3f;
+    
+    float h_multiplier = 5f;
+    float v_multiplier = 5f;
 
     bool canMove = true;
     int line = 0;
@@ -19,105 +20,112 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        Vector3 pos = gameObject.transform.localPosition;
- 
-        if (!line.Equals(targetLine))
-        {
-            if(targetLine == -1 && pos.x > -h_dimension)
-            {
-                gameObject.transform.localPosition = new Vector3(-h_dimension, pos.y, pos.z);
-                line = targetLine;
-                canMove = true;
-                movement.x = 0;
-            }
-            else if (targetLine == 0 && pos.x != 0)
-            {
-                if (line == -1 && pos.x < 0)
-                {
-                    gameObject.transform.localPosition = new Vector3(0, pos.y, pos.z);
-                    line = targetLine;
-                    canMove = true;
-                    movement.x = 0;
-                }
-                else if (line == 1 && pos.x > 0)
-                {
-                    gameObject.transform.localPosition = new Vector3(0, pos.y, pos.z);
-                    line = targetLine;
-                    canMove = true;
-                    movement.x = 0;
-                }
-            }
-            else if (targetLine == 1 && pos.x < h_dimension)
-            {
-                gameObject.transform.localPosition = new Vector3(h_dimension, pos.y, pos.z);
-                line = targetLine;
-                canMove = true;
-                movement.x = 0;
-            }
-        }
-        if (!level.Equals(targetLevel))
-        {
-            if (targetLevel == -1 && pos.y > -v_dimension)
-            {
-                gameObject.transform.position = new Vector3(pos.x, -v_dimension, pos.z);
-                level = targetLevel;
-                canMove = true;
-                movement.y = 0;
-            }
-            else if (targetLevel == 0 && pos.y != 0)
-            {
-                if (level == -1 && pos.y < 0)
-                {
-                    gameObject.transform.position = new Vector3(pos.x, 0, pos.z);
-                    level = targetLevel;
-                    canMove = true;
-                    movement.y = 0;
-                }
-                else if (level == 1 && pos.y > 0)
-                {
-                    gameObject.transform.position = new Vector3(pos.x, 0, pos.z);
-                    level = targetLevel;
-                    canMove = true;
-                    movement.y = 0;
-                }
-            }
-            if (targetLevel == 1 && pos.y < v_dimension)
-            {
-                gameObject.transform.position = new Vector3(pos.x, v_dimension, pos.z);
-                level = targetLevel;
-                canMove = true;
-                movement.y = 0;
-            }
-        }
-
-        checkInput();
+        CheckInput();
+        CheckMove();
     }
 
-    void checkInput()
+    private void CheckInput()
     {
         if(Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow) && canMove && line > -1)
         {
             targetLine--;
             canMove = false;
-            movement.x = h_dimension * targetLine;
         }
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow) && canMove && line < 1)
         {
             targetLine++;
             canMove = false;
-            movement.x = h_dimension * targetLine;
         }
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) && canMove && level < 1)
         {
             targetLevel++;
             canMove = false;
-            movement.y = h_dimension  * targetLine;
         }
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) && canMove && level > 1)
         {
             targetLevel--;
             canMove = false;
-            movement.y = h_dimension * targetLine;
         }
+    }
+
+    private void CheckMove()
+    {
+        Vector3 pos = gameObject.transform.localPosition;
+        if (!line.Equals(targetLine))
+        {
+            if (targetLine == -1 && pos.x > -h_multiplier)
+            {
+                Move(Vector3.left);
+            }
+            else if (targetLine == 0 && pos.x != 0)
+            {
+                if (line == -1 && pos.x < 0)
+                {
+                    Move(Vector3.right);
+                }
+                else if (line == 1 && pos.x > 0)
+                {
+                    Move(Vector3.left);
+                }
+            }
+            else if (targetLine == 1 && pos.x < h_multiplier)
+            {
+                Move(Vector3.right);
+            }
+
+        }
+        if (!level.Equals(targetLevel))
+        {
+            if (targetLevel == -1 && pos.y > -5)
+            {
+                Move(Vector3.down);
+            }
+            else if (targetLevel == 0 && pos.y != 0)
+            {
+                if (level == -1 && pos.y < 0)
+                {
+                    Move(Vector3.up);
+                }
+                else if (level == 1 && pos.y > 0)
+                {
+                    Move(Vector3.down);
+                }
+            }
+            if (targetLevel == 1 && pos.y < 5)
+            {
+                Move(Vector3.up);
+            }
+        }
+    }
+
+    IEnumerator SmoothMove(Vector3 direction)
+    {
+        float startTime = Time.time;
+        Vector3 startPos = transform.position;
+        Vector3 endPos = transform.position += direction;
+
+        while (startPos != endPos && (Time.time - startTime) * speed < 1f)
+        {
+            float t = (Time.time - startTime) * speed;
+            float move = Mathf.Lerp(0, .5f, t);
+
+            transform.position += direction * move;
+
+            yield return null;
+        }
+    }
+
+    private void Move(Vector3 direction)
+    {
+        StartCoroutine(SmoothMove(direction));
+        if (direction.x != 0)
+        {
+            line = targetLine;
+        }
+        else
+        {
+            level = targetLevel;
+        }
+        canMove = true;
     }
 }
