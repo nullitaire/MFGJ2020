@@ -6,10 +6,12 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 public class PlayerMovement : MonoBehaviour
-{ 
+{
+    Rigidbody rb;
+
     public float speed;
-    float regSpeed = 3f;
-    float dashSpeed = 10f;
+    readonly float regSpeed = 10f;
+    readonly float dashSpeed = 25f;
     
     float h_multiplier = 5f;
     float v_multiplier = 5f;
@@ -23,20 +25,16 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         CheckInput();
+    }
+
+    private void FixedUpdate()
+    {
         CheckMove();
     }
 
     private void CheckInput()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            speed = dashSpeed;
-        }
-        else
-        {
-            speed = regSpeed;
-        }
-
+        SetSpeed();
         if(Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow) && canMove && line > -1)
         {
             targetLine--;
@@ -51,6 +49,7 @@ public class PlayerMovement : MonoBehaviour
         {
             targetLevel++;
             canMove = false;
+            
         }
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) && canMove && level > 1)
         {
@@ -87,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if (!level.Equals(targetLevel))
         {
-            if (targetLevel == -1 && pos.y > -5)
+            if (targetLevel == -1 && pos.y > -v_multiplier)
             {
                 Move(Vector3.down);
             }
@@ -102,35 +101,37 @@ public class PlayerMovement : MonoBehaviour
                     Move(Vector3.down);
                 }
             }
-            if (targetLevel == 1 && pos.y < 5)
+            if (targetLevel == 1 && pos.y < v_multiplier)
             {
                 Move(Vector3.up);
             }
         }
     }
-
-    IEnumerator SmoothMove(Vector3 direction)
+    void SetSpeed()
     {
-        Vector3 start = transform.position;
-        Vector3 end = transform.position + direction * speed;
-        float duration = .5f;
-        float spentTime = 0;
-        float interval = .1f;
-
-        while(start != end && duration-spentTime > 0)
+        if (Input.GetKey(KeyCode.Space))
         {
-            spentTime += interval;
-            float move = Mathf.Lerp(0, 5, .2f);
-            Debug.Log("Time Spent: "+ spentTime + ", Moved: " + move);
-            //put move into vector form and add its value to current position
-            transform.position += direction * move;
+            speed = dashSpeed;
+        }
+        else
+        {
+            speed = regSpeed;
+        }
+    }
+
+    IEnumerator MoveTo(Vector3 direction)
+    {
+        Vector3 destination = transform.localPosition + direction * 5;
+        while(transform.localPosition != destination)
+        {
+            transform.localPosition = Vector3.MoveTowards(transform.localPosition, destination, speed*Time.deltaTime);
             yield return null;
         }
     }
 
     private void Move(Vector3 direction)
     {
-        StartCoroutine(SmoothMove(direction));
+        StartCoroutine(MoveTo(direction));
         if (direction.x != 0)
         {
             line = targetLine;
