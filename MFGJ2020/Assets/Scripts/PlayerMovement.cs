@@ -7,14 +7,12 @@ using UnityEngine.Rendering;
 
 public class PlayerMovement : MonoBehaviour
 {
-    Rigidbody rb;
-
     public float speed;
     readonly float regSpeed = 10f;
     readonly float dashSpeed = 25f;
-    
-    float h_multiplier = 5f;
-    float v_multiplier = 5f;
+
+    readonly float h_multiplier = 5f;
+    readonly float v_multiplier = 5f;
 
     bool canMove = true;
     int line = 0;
