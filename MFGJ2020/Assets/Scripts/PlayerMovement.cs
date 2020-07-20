@@ -7,7 +7,9 @@ using UnityEngine.Rendering;
 
 public class PlayerMovement : MonoBehaviour
 { 
-    public float speed = 3f;
+    public float speed;
+    float regSpeed = 3f;
+    float dashSpeed = 10f;
     
     float h_multiplier = 5f;
     float v_multiplier = 5f;
@@ -26,6 +28,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckInput()
     {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            speed = dashSpeed;
+        }
+        else
+        {
+            speed = regSpeed;
+        }
+
         if(Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow) && canMove && line > -1)
         {
             targetLine--;
@@ -100,17 +111,19 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator SmoothMove(Vector3 direction)
     {
-        float startTime = Time.time;
-        Vector3 startPos = transform.position;
-        Vector3 endPos = transform.position += direction;
+        Vector3 start = transform.position;
+        Vector3 end = transform.position + direction * speed;
+        float duration = .5f;
+        float spentTime = 0;
+        float interval = .1f;
 
-        while (startPos != endPos && (Time.time - startTime) * speed < 1f)
+        while(start != end && duration-spentTime > 0)
         {
-            float t = (Time.time - startTime) * speed;
-            float move = Mathf.Lerp(0, .5f, t);
-
+            spentTime += interval;
+            float move = Mathf.Lerp(0, 5, .2f);
+            Debug.Log("Time Spent: "+ spentTime + ", Moved: " + move);
+            //put move into vector form and add its value to current position
             transform.position += direction * move;
-
             yield return null;
         }
     }
