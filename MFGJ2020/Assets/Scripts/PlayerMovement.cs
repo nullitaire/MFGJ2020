@@ -14,6 +14,10 @@ public class PlayerMovement : MonoBehaviour
     readonly float h_multiplier = 5f;
     readonly float v_multiplier = 5f;
 
+    float jumpDistance = 3f;
+    float jumpSpeed = 4f;
+    float fallSpeed = 7f;
+
     bool canMove = true;
     int line = 0;
     int targetLine = 0;
@@ -84,24 +88,14 @@ public class PlayerMovement : MonoBehaviour
         }
         if (!level.Equals(targetLevel))
         {
-            if (targetLevel == -1 && pos.y > -v_multiplier)
+
+            if(targetLevel == 1 && pos.y < v_multiplier)
             {
-                Move(Vector3.down);
+                Jump(Vector3.up);
             }
-            else if (targetLevel == 0 && pos.y != 0)
+            if(targetLevel == -1 && pos.y > -v_multiplier)
             {
-                if (level == -1 && pos.y < 0)
-                {
-                    Move(Vector3.up);
-                }
-                else if (level == 1 && pos.y > 0)
-                {
-                    Move(Vector3.down);
-                }
-            }
-            if (targetLevel == 1 && pos.y < v_multiplier)
-            {
-                Move(Vector3.up);
+                Jump(Vector3.down);
             }
         }
     }
@@ -126,18 +120,39 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
     }
+    IEnumerator MoveVert(Vector3 direction)
+    {
+        Vector3 destination = transform.localPosition + direction * jumpDistance;
+
+        while(transform.localPosition != destination)
+        {
+            transform.localPosition = Vector3.MoveTowards(transform.localPosition, destination, jumpSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(.1f);
+        Vector3 endpoint = transform.localPosition - direction * jumpDistance;
+
+        while(transform.localPosition != endpoint)
+        {
+            transform.localPosition = Vector3.MoveTowards(transform.localPosition, endpoint, fallSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        yield return new WaitForEndOfFrame();
+    }
 
     private void Move(Vector3 direction)
     {
         StartCoroutine(MoveTo(direction));
-        if (direction.x != 0)
-        {
-            line = targetLine;
-        }
-        else
-        {
-            level = targetLevel;
-        }
+        line = targetLine;
+        canMove = true;
+    }
+
+    private void Jump(Vector3 direction)
+    {
+        StartCoroutine(MoveVert(direction));
+        level = targetLevel = 0;
         canMove = true;
     }
 }
